@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マーケティング心理学 第6部テスト</title>
+<style>
+  :root {
+    --navy: #264C99;
+    --navy-dark: #1a3a7a;
+    --light-blue: #E8EEF4;
+    --dark: #1A1A1A;
+    --green: #2E7D32;
+    --green-bg: #E8F5E9;
+    --red: #C62828;
+    --red-bg: #FFEBEE;
+    --gray: #757575;
+    --border: #D0D7E3;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Sans','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',sans-serif;
+    background: #F5F7FA;
+    color: var(--dark);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .site-header {
+    background: var(--navy);
+    color: white;
+    padding: 32px 20px 28px;
+    text-align: center;
+  }
+  .site-header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 10px; }
+  .site-header .sub { font-size: 14px; opacity: 0.85; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+  .site-header .scholars { font-size: 13px; opacity: 0.75; margin-top: 8px; }
+  .progress-container {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+  .progress-bar-outer { height: 8px; background: var(--light-blue); border-radius: 99px; overflow: hidden; }
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--navy), #4A7BD4);
+    border-radius: 99px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+  .main-content { max-width: 800px; margin: 0 auto; padding: 28px 16px 60px; }
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--navy);
+    border-left: 4px solid var(--navy); padding-left: 14px; margin: 36px 0 20px;
+  }
+  .section-subtitle { font-size: 13px; color: var(--gray); margin-top: 4px; font-weight: 400; }
+  .question-card {
+    background: white; border-radius: 12px; padding: 24px 24px 20px; margin-bottom: 20px;
+    border: 1.5px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: border-color 0.2s;
+  }
+  .question-card:focus-within { border-color: var(--navy); }
+  .question-number {
+    display: inline-block; background: var(--navy); color: white; font-size: 12px;
+    font-weight: 700; padding: 2px 10px; border-radius: 99px; margin-bottom: 10px; letter-spacing: 0.05em;
+  }
+  .question-text { font-size: 15px; font-weight: 600; line-height: 1.75; color: var(--dark); margin-bottom: 16px; white-space: pre-wrap; }
+  .options-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .option-label {
+    display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px;
+    border-radius: 8px; border: 1.5px solid var(--border); cursor: pointer;
+    transition: background 0.15s, border-color 0.15s; font-size: 14px; line-height: 1.6;
+  }
+  .option-label:hover { background: var(--light-blue); border-color: var(--navy); }
+  .option-label input[type="radio"] {
+    margin-top: 3px; flex-shrink: 0; accent-color: var(--navy); width: 16px; height: 16px; cursor: pointer;
+  }
+  .option-label input[type="radio"]:checked + .option-text { font-weight: 600; color: var(--navy); }
+  .option-label.selected { background: var(--light-blue); border-color: var(--navy); }
+  .option-label.correct { background: var(--green-bg) !important; border-color: var(--green) !important; color: var(--green); }
+  .option-label.incorrect { background: var(--red-bg) !important; border-color: var(--red) !important; color: var(--red); }
+  .option-label.correct .option-text, .option-label.incorrect .option-text { font-weight: 600; }
+  .result-icon { display: none; font-size: 16px; margin-left: auto; flex-shrink: 0; }
+  .result-icon.show { display: inline; }
+  .question-result-badge { display: none; float: right; font-size: 22px; margin-top: -4px; }
+  .question-result-badge.show { display: block; }
+  .explanation-box {
+    display: none; margin-top: 16px; padding: 14px 16px;
+    background: #F0F4FF; border-radius: 8px; border-left: 3px solid var(--navy);
+    font-size: 13.5px; color: #333; line-height: 1.7;
+  }
+  .explanation-box.show { display: block; }
+  .explanation-label { font-weight: 700; color: var(--navy); margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .model-answer-box {
+    display: none; margin-top: 16px; padding: 16px; background: #F8F9FA;
+    border-radius: 8px; border: 1px solid var(--border); font-size: 13.5px; line-height: 1.75; color: #333;
+  }
+  .model-answer-box.show { display: block; }
+  .model-answer-label {
+    font-weight: 700; color: var(--navy); font-size: 12px; letter-spacing: 0.05em;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .submit-area { text-align: center; margin: 40px 0 20px; }
+  .submit-btn {
+    background: var(--navy); color: white; border: none; padding: 16px 48px;
+    font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer;
+    letter-spacing: 0.05em; transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 12px rgba(38,76,153,0.3);
+  }
+  .submit-btn:hover { background: var(--navy-dark); transform: translateY(-1px); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-note { font-size: 13px; color: var(--gray); margin-top: 10px; }
+  #results-panel {
+    display: none; background: white; border-radius: 16px; border: 2px solid var(--navy);
+    padding: 32px 28px; margin: 24px 0; text-align: center;
+    box-shadow: 0 4px 20px rgba(38,76,153,0.15);
+  }
+  #results-panel.show { display: block; }
+  .score-display { font-size: 52px; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+  .score-display span { font-size: 22px; color: var(--gray); font-weight: 500; }
+  .score-label { font-size: 16px; color: var(--gray); margin-bottom: 20px; }
+  .score-message { font-size: 18px; font-weight: 700; padding: 14px 24px; border-radius: 8px; display: inline-block; margin-bottom: 20px; }
+  .score-message.excellent { background: var(--green-bg); color: var(--green); }
+  .score-message.good { background: #FFF8E1; color: #F57F17; }
+  .score-message.review { background: var(--red-bg); color: var(--red); }
+  .score-breakdown { font-size: 14px; color: var(--gray); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; }
+  .retry-btn {
+    margin-top: 20px; background: white; color: var(--navy); border: 2px solid var(--navy);
+    padding: 12px 32px; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer;
+    letter-spacing: 0.04em; transition: background 0.2s;
+  }
+  .retry-btn:hover { background: var(--light-blue); }
+  .options-list.answered .option-label { cursor: default; pointer-events: none; }
+  .section-divider { border: none; border-top: 2px dashed var(--border); margin: 40px 0; }
+  @media (max-width: 600px) {
+    .site-header h1 { font-size: 18px; }
+    .question-card { padding: 18px 16px 16px; }
+    .score-display { font-size: 42px; }
+    .submit-btn { padding: 14px 32px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>マーケティング心理学<br>第6部：追加論者8名</h1>
+  <p class="sub">感覚・感情・体験・ブランドパーソナリティの実務応用</p>
+  <p class="scholars">論者18〜25：リンストローム / ダマシオ / バーガー / ベルク / フォアニエ / パイン&ギルモア / オルター / エイカー</p>
+</header>
+
+<div class="progress-container">
+  <div class="progress-label">
+    <span id="progress-text">進捗：0 / 8 問回答済み</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progress-bar"></div>
+  </div>
+</div>
+
+<div class="main-content">
+  <form id="quiz-form" novalidate>
+
+    <div class="section-title">
+      選択式問題（Q1〜Q5）
+      <div class="section-subtitle">各問に対し最も適切な選択肢を1つ選んでください。</div>
+    </div>
+    <div id="mc-questions-container"></div>
+
+    <div class="submit-area">
+      <button type="button" class="submit-btn" onclick="submitQuiz()">テストを提出する</button>
+    </div>
+  </form>
+
+  <div id="results-panel">
+    <div class="score-display" id="score-display">—</div>
+    <div class="score-label">選択式正解数（5問中）</div>
+    <div class="score-message" id="score-message"></div>
+    <div class="score-breakdown" id="score-breakdown"></div>
+    <br>
+    <button class="retry-btn" onclick="resetQuiz()">最初からやり直す</button>
+  </div>
+</div>
+
+<script>
+const mcQuestions = [
+  {
+    q: "Q1. あるブランドが「顧客生涯価値（LTV）を高める」施策として、既存顧客向けに誕生日クーポン（10%OFF）を送付しました。クーポン利用率は高かったものの、LTVは改善しませんでした。この失敗の最も可能性が高い原因はどれか？",
+    options: [
+      "A. 10%では割引率が低すぎた",
+      "B. 誕生日は年1回しか来ないため、頻度が少なすぎた",
+      "C. 金銭的報酬（割引）は購買頻度を一時的に上げるが、感情的ロイヤルティを育てない。また「割引前提」の購買行動を学習させた可能性がある",
+      "D. セグメントが広すぎて高ロイヤルティ顧客と低ロイヤルティ顧客が混在した"
+    ],
+    answer: 2,
+    explanation: "C（金銭的報酬が感情的ロイヤルティを育てない）が核心です。割引クーポンは「お得な時だけ買う」という外発的動機を強化し、割引なしの通常価格での購買を減らすリスクがあります。LTV向上には「このブランドじゃなければならない理由」という感情的結合（ブランドロイヤルティ）が必要です。誕生日クーポンを送るなら、割引より「あなただけの特別な体験・メッセージ」にする方が感情的関係を育てます。"
+  },
+  {
+    q: "Q2.【予測問題】SNSでの自発的な口コミを増やすため、2つのアプローチをテストしました。<br>A案：購入後に「レビューを書くと次回500円OFF」というメールを送る<br>B案：購入後に「あなたの購入で植林活動が1本分支援されました」という活動報告メールを送る（割引なし）<br>結果として、SNS口コミ投稿数が多かったのはA案、B案、どちらでしょうか？",
+    options: [
+      "A. A案（インセンティブあり）の方が多かった（500円OFFという具体的な報酬が投稿という行動を確実に増やす）",
+      "B. B案（植林支援）の方が多かった（意味・共感に基づく内発的動機が自発的な口コミを生む）",
+      "C. 差はなかった（口コミ投稿数は施策より商品品質・価格で決まる）"
+    ],
+    answer: 0,
+    explanation: "A案（金銭的インセンティブ）の方がSNS投稿数は多くなります。500円OFFというインセンティブは「書く理由」を明示的に与えるため、投稿数という行動指標では優位に立ちます。ただし重要な補足として、A案の投稿は「義務感・見返り目的」で書かれた薄い内容になりやすく（ニーズィーのクラウディングアウト効果：外部報酬が内発的動機を押しつぶす）、読んだ人を動かす力が弱い傾向があります。B案は投稿数は少ないものの、本当に共感した人だけが自発的に書くため内容の熱量・拡散力が高くなります。「投稿数」と「口コミの効果（拡散力・信頼性）」は別の指標であり、マーケティング目的によって最適な施策は異なります。"
+  },
+  {
+    q: "Q3. ダマシオの研究によると「感情のない人は意思決定ができない」ことが示されています。これをBtoBマーケティングに応用するとき、最も適切な解釈はどれか？",
+    options: [
+      "A. BtoBは論理・ROIで決まるため、感情の影響は無視できる",
+      "B. BtoBの購買担当者も感情によって「どの会社に頼みたいか」が決まる部分があり、スペック比較だけでは差別化できない",
+      "C. 感情訴求はBtoCだけに有効で、BtoBでは逆効果になりうる",
+      "D. 感情はリスク判断（この会社は大丈夫か）にのみ機能し、積極的な選択動機にはならない"
+    ],
+    answer: 1,
+    explanation: "B（BtoBでも感情が購買担当者に影響する）が正しい解釈です。BtoBでは「同等のスペック・価格なら信頼感・親しみやすさ・安心感で決まる」ことが多く、担当者個人の感情的判断が会社の意思決定に反映されます。またリスク回避の観点から「この会社と組んで大丈夫か」という感情的安心が最後の一押しになります。ダマシオの研究は「感情は意思決定に不可欠」を示しており、BtoB提案書にも感情設計が有効です。"
+  },
+  {
+    q: "Q4. あるコワーキングスペースが口コミによる新規会員獲得を狙い、既存会員に「友人紹介で月額1,000円割引」を提供するリファラルプログラムを開始しましたが、紹介数はほとんど増えませんでした。バーガーの口コミ理論（STEPPS）の観点から、このプログラムが機能しなかった原因を説明するとしたら、どれが最も近いか？",
+    options: [
+      "A. 割引額が1,000円では行動コスト（紹介する手間・気まずさ）に見合わず、外発的インセンティブとして不十分だった",
+      "B. 「便利で快適に使えている」という満足感はあっても、友人に話したくなる驚き・自慢できる成果（ソーシャルカレンシー）が生まれていなかった",
+      "C. リファラルプログラムが会員に十分周知されておらず、そもそも制度を知らない会員が多かった",
+      "D. 紹介された側の友人にも特典が設計されておらず、紹介しても相手に喜ばれる理由がなかった"
+    ],
+    answer: 1,
+    explanation: "B（ソーシャルカレンシーの欠如）が根本原因です。バーガーのSTEPPS理論において、口コミが生まれる最も強力な動機のひとつが「ソーシャルカレンシー（これを使っている/知っている自分を見せることで賢く・おしゃれに見える）」です。コワーキングスペースは「毎日便利に使っている」という事実はあっても、友人に語りかけるほどの「驚き・変化・自慢できる体験」が乏しく、そもそも話題にする動機が生まれません。割引額の大小（A）は動機がある人の背中を押すツールですが、話したい動機そのものが欠如していると効果がありません。周知不足（C）や紹介者特典設計（D）は補足的な改善点ですが根本原因ではなく、まず「話したくなるコンテンツ」を作ることが先決です。"
+  },
+  {
+    q: "Q5. エイカーのブランドパーソナリティ研究が示す「ブランドパーソナリティが確立された顧客」の行動特性として、最も正確なものはどれか？",
+    options: [
+      "A. ブランドに人格を感じている顧客は、競合の価格訴求より「このブランドとの関係性・自己表現」を優先して購買を決定する傾向があり、価格競争の影響を受けにくい",
+      "B. ブランドパーソナリティへの共感が強い顧客ほど、期待を裏切られたときの失望が大きく、競合の低価格キャンペーンを「ブランドが負けた証拠」と捉えて離脱しやすい",
+      "C. ブランドパーソナリティは購買後の満足度（事後評価）に影響するが、次回の購買選択（事前行動）には価格や利便性が優先され、行動への直接影響は小さい",
+      "D. ブランドパーソナリティが確立されると全顧客の価格感度が均等に低下し、どのような価格差があっても離脱率が変わらなくなる"
+    ],
+    answer: 0,
+    explanation: "A（ブランドパーソナリティに共感する顧客は価格より関係性を優先する）が正確です。エイカーの研究によれば、ブランドに「誠実さ」「刺激」「能力」「洗練」「頑丈さ」といった人格を感じた顧客は、そのブランドとの関係を「人間関係に近いもの」として扱います（フォアニエのブランドリレーションシップ理論）。コミットメント段階の顧客は「安さだけが理由の競合」を代替と見なさないため、価格競争の影響を受けにくくなります。B（期待を裏切られた際の離脱）は、ブランドが自ら誠実さに反する行動をとった場合に起きますが、競合の値下げ自体はブランドの人格を損なわないため離脱要因にはなりません。C（購買行動への影響が小さい）は誤りで、パーソナリティへの共感は満足度だけでなく繰り返し購買行動にも影響します。D（全顧客に均等効果）は過大評価であり、パーソナリティに共感していない価格重視層には効果が限定されます。"
+  }
+];
+
+let answered = { mc: {}, sa: {} };
+const TOTAL = mcQuestions.length;
+
+function updateProgress() {
+  const done = Object.keys(answered.mc).length + Object.keys(answered.sa).length;
+  const pct = Math.round(done / TOTAL * 100);
+  document.getElementById('progress-text').textContent = `進捗：${done} / ${TOTAL} 問回答済み`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function buildMC() {
+  const container = document.getElementById('mc-questions-container');
+  mcQuestions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'mc-card-' + i;
+    let optionsHTML = '';
+    q.options.forEach((opt, j) => {
+      optionsHTML += `<li>
+        <label class="option-label" id="mc-opt-${i}-${j}">
+          <input type="radio" name="mc-${i}" value="${j}" onchange="onMCChange(${i})">
+          <span class="option-text">${opt}</span>
+          <span class="result-icon" id="mc-icon-${i}-${j}"></span>
+        </label>
+      </li>`;
+    });
+    card.innerHTML = `
+      <div>
+        <span class="question-number">選択式 Q${i+1}</span>
+        <span class="question-result-badge" id="mc-badge-${i}"></span>
+      </div>
+      <div class="question-text">${q.q}</div>
+      <ul class="options-list" id="mc-options-${i}">${optionsHTML}</ul>
+      <div class="explanation-box" id="mc-exp-${i}">
+        <div class="explanation-label">解説</div>
+        <div>${q.explanation}</div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function onMCChange(i) {
+  answered.mc[i] = true;
+  const opts = document.querySelectorAll(`input[name="mc-${i}"]`);
+  opts.forEach((r, j) => {
+    document.getElementById(`mc-opt-${i}-${j}`).classList.toggle('selected', r.checked);
+  });
+  updateProgress();
+}
+
+function submitQuiz() {
+  let score = 0;
+  mcQuestions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="mc-${i}"]:checked`);
+    const optsList = document.getElementById('mc-options-' + i);
+    optsList.classList.add('answered');
+    const badge = document.getElementById('mc-badge-' + i);
+    if (selected) {
+      const sel = parseInt(selected.value);
+      if (sel === q.answer) {
+        score++;
+        badge.textContent = '✓';
+        badge.style.color = 'var(--green)';
+        document.getElementById('mc-opt-' + i + '-' + sel).classList.add('correct');
+        const icon = document.getElementById('mc-icon-' + i + '-' + sel);
+        icon.textContent = '✓'; icon.classList.add('show');
+      } else {
+        badge.textContent = '✗';
+        badge.style.color = 'var(--red)';
+        document.getElementById('mc-opt-' + i + '-' + sel).classList.add('incorrect');
+        const iconW = document.getElementById('mc-icon-' + i + '-' + sel);
+        iconW.textContent = '✗'; iconW.classList.add('show');
+        document.getElementById('mc-opt-' + i + '-' + q.answer).classList.add('correct');
+        const iconC = document.getElementById('mc-icon-' + i + '-' + q.answer);
+        iconC.textContent = '✓'; iconC.classList.add('show');
+      }
+    } else {
+      badge.textContent = '−';
+      badge.style.color = 'var(--gray)';
+      document.getElementById('mc-opt-' + i + '-' + q.answer).classList.add('correct');
+    }
+    badge.classList.add('show');
+    document.getElementById('mc-exp-' + i).classList.add('show');
+  });
+  const panel = document.getElementById('results-panel');
+  panel.classList.add('show');
+  document.getElementById('score-display').innerHTML = `${score}<span> / 5</span>`;
+  let msgText, msgClass;
+  if (score >= 5) { msgText = '満点！行動科学の知見を深く理解しています！'; msgClass = 'excellent'; }
+  else if (score >= 3) { msgText = '良好：基本的な理解ができています。解説で理解を深めましょう。'; msgClass = 'good'; }
+  else { msgText = '要復習：参考資料を再確認し、各概念の実務応用を練習しましょう。'; msgClass = 'review'; }
+  const msgEl = document.getElementById('score-message');
+  msgEl.textContent = msgText;
+  msgEl.className = 'score-message ' + msgClass;
+  document.getElementById('score-breakdown').innerHTML = `正答数：${score} / 5問`;
+  document.querySelector('.submit-btn').disabled = true;
+  document.querySelector('.submit-btn').style.opacity = '0.5';
+  document.querySelector('.submit-btn').textContent = '提出済み';
+  setTimeout(() => { panel.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 400);
+}
+
+function resetQuiz() { location.reload(); }
+
+buildMC();
+updateProgress();
+</script>
+</body>
+</html>
